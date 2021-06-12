@@ -7,9 +7,13 @@
 
     /*------------------------------------*\
         External Modules/Files
-    \*------------------------------------*/
+        Load any external files you have here
+    \*------------------------------------*/    
 
-    // Load any external files you have here
+    /**
+     * Include the TGM_Plugin_Activation class.
+     */
+    require_once 'class-tgm-plugin-activation.php';
 
     /*------------------------------------*\
         Theme Support
@@ -127,6 +131,83 @@
         wp_enqueue_style('blur'); // Enqueue it!
     }
 
+    // Blur branding 
+    function blue_update_footer_admin() 
+    {
+        echo '<span id="footer-thankyou">Thank you creating with <a href="https://github.com/dev-ramiz-1707/blur" target="_blank">Blur Theme</a>, Developed by <a href="https://github.com/dev-ramiz-1707" target="_blank">Dev_ramiz_1707</a></span>';
+    }
+
+    /**
+     * Register the required plugins for this theme.
+     *
+     * In this example, we register five plugins:
+     * - one included with the TGMPA library
+     * - two from an external source, one from an arbitrary source, one from a GitHub repository
+     * - two from the .org repo, where one demonstrates the use of the `is_callable` argument
+     *
+     * The variables passed to the `tgmpa()` function should be:
+     * - an array of plugin arrays;
+     * - optionally a configuration array.
+     * If you are not changing anything in the configuration array, you can remove the array and remove the
+     * variable from the function call: `tgmpa( $plugins );`.
+     * In that case, the TGMPA default settings will be used.
+     *
+     * This function is hooked into `tgmpa_register`, which is fired on the WP `init` action on priority 10.
+     */
+    function blur_register_required_plugins() {
+        /*
+        * Array of plugin arrays. Required keys are name and slug.
+        * If the source is NOT from the .org repo, then source is also required.
+        */
+        $plugins = array(           
+           
+            array(
+                'name'      => 'Elementor',
+                'slug'      => 'elementor',
+                'required'  => false,
+            ),
+            
+            array(
+                'name'      => 'Unyson',
+                'slug'      => 'unyson',
+                'required'  => true,
+            ),
+            
+            array(
+                'name'        => 'Rank Math SEO',
+                'slug'        => 'seo-by-rank-math',
+                'is_callable' => 'wpseo_init',
+                'required'  => false,
+            ),
+
+        );
+
+        /*
+        * Array of configuration settings. Amend each line as needed.
+        *
+        * TGMPA will start providing localized text strings soon. If you already have translations of our standard
+        * strings available, please help us make TGMPA even better by giving us access to these translations or by
+        * sending in a pull-request with .po file(s) with the translations.
+        *
+        * Only uncomment the strings in the config array if you want to customize the strings.
+        */
+        $config = array(
+            'id'           => 'blur',                  // Unique ID for hashing notices for multiple instances of TGMPA.
+            'default_path' => '',                      // Default absolute path to bundled plugins.
+            'menu'         => 'blur-install-plugins',  // Menu slug.
+            'parent_slug'  => 'themes.php',            // Parent menu slug.
+            'capability'   => 'edit_theme_options',    // Capability needed to view plugin install page, should be a capability associated with the parent menu used.
+            'has_notices'  => true,                    // Show admin notices or not.
+            'dismissable'  => true,                    // If false, a user cannot dismiss the nag message.
+            'dismiss_msg'  => '',                      // If 'dismissable' is false, this message will be output at top of nag.
+            'is_automatic' => false,                   // Automatically activate plugins after installation or not.
+            'message'      => '',                      // Message to output right before the plugins table.
+        );
+
+        tgmpa( $plugins, $config );
+    }
+
+
     /*------------------------------------*\
 	    Actions + Filters + ShortCodes
     \*------------------------------------*/
@@ -134,5 +215,9 @@
     // Add Actions
     add_action('init', 'blur_header_scripts'); // Add Custom Scripts to wp_head
     add_action('wp_enqueue_scripts', 'blue_styles'); // Add Theme Stylesheet
+    add_filter('admin_footer_text', 'blue_update_footer_admin'); // Blur Branding hook
+    add_action( 'tgmpa_register', 'blur_register_required_plugins' ); // Required plugin validation.
+
+    
 
 ?>
